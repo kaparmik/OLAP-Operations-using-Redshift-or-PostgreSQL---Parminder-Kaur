@@ -1,0 +1,82 @@
+Task 4
+Project: OLAP Operations (using Redshift or PostgreSQL)
+
+1. Database Creation
+
+---Create a database to store the sales data
+
+CREATE DATABASE Salesdata;
+
+---Create a table named "sales_sample" with the specified columns: Product_Id (Integer), Region (varchar(50))-like East ,West etc , Date (Date) & Sales_Amount (int/numeric)
+
+CREATE TABLE sales_sample (
+    Product_Id INTEGER,
+    Region VARCHAR(50),
+    Date DATE,
+    Sales_Amount NUMERIC
+);
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2. Data Creation
+---Insert 10 sample records into the "sales_sample" table, representing sales data
+
+INSERT INTO sales_sample (Product_Id, Region, Date, Sales_Amount)
+VALUES 
+(101, 'North', '2025-05-10', 550),
+(102, 'South', '2025-05-12', 1700),
+(101, 'North', '2025-05-12', 1100),
+(103, 'East', '2025-05-10', 900),
+(102, 'South', '2025-05-12', 1200),
+(104, 'West', '2025-05-10', 700),
+(101, 'East', '2025-05-13', 1200),
+(103, 'North', '2025-05-13', 1500),
+(104, 'West', '2025-05-12', 650),
+(102, 'South', '2025-05-13', 1750);
+
+SELECT * FROM sales_sample;
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3. Perform OLAP operations
+
+a) Drill Down-Analyze sales data at a more detailed level. Write a query to perform drill down from region to product level to understand sales performance.
+
+SELECT Region, Product_Id, SUM(Sales_Amount) AS Total_Sales
+FROM sales_sample
+GROUP BY Region, Product_Id
+ORDER BY Region, Product_Id;
+
+b) Rollup- To summarize sales data at different levels of granularity. Write a query to perform roll up from product to region level to view total sales by region.
+
+SELECT Region, Product_Id, SUM(Sales_Amount) AS Total_Sales
+FROM sales_sample
+GROUP BY ROLLUP (Region, Product_Id)
+ORDER BY Region, Product_Id;
+
+c) Cube - To analyze sales data from multiple dimensions simultaneously. Write a query to Explore sales data from different perspectives, such as product, region, and date.
+
+SELECT Region, Product_Id, Date, SUM(Sales_Amount) AS Total_Sales
+FROM sales_sample
+GROUP BY CUBE (Region, Product_Id, Date)
+ORDER BY Region, Product_Id, Date;
+
+d) Slice- To extract a subset of data based on specific criteria. Write a query to slice the data to view sales for a particular region or date range.
+
+-- Slice for Region = 'East'
+
+SELECT * 
+FROM sales_sample
+WHERE Region = 'East';
+
+-- Slice for Date = '2025-05-13'
+
+SELECT * 
+FROM sales_sample
+WHERE Date = '2025-05-13';
+
+e) Dice - To extract data based on multiple criteria. Write a query to view sales for specific combinations of product, region, and date
+
+SELECT * 
+FROM sales_sample
+WHERE Product_Id IN (101, 102)
+  AND Region IN ('North', 'South')
+  AND Date BETWEEN '2025-05-10' AND '2025-05-12';
